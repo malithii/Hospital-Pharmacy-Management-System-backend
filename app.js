@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import pharmacistRoutes from "./routes/pharmacistRoutes.js";
 import wardUserRoutes from "./routes/wardUserRoutes.js";
+import drugsRoutes from "./routes/drugsRoutes.js";
 
 dotenv.config();
 
@@ -14,6 +15,7 @@ app.use(express.json());
 
 app.use("/pharmacist", pharmacistRoutes);
 app.use("/ward-users", wardUserRoutes);
+app.use("/drugs", drugsRoutes);
 
 mongoose
   .connect(process.env.db, {
