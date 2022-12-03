@@ -2,7 +2,8 @@ import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
-import router from "./routes/wardUserRoutes.js";
+import pharmacistRoutes from "./routes/pharmacistRoutes.js";
+import wardUserRoutes from "./routes/wardUserRoutes.js";
 
 dotenv.config();
 
@@ -11,7 +12,8 @@ app.use(cors());
 
 app.use(express.json());
 
-app.use(router);
+app.use("/pharmacist", pharmacistRoutes);
+app.use("/ward-users", wardUserRoutes);
 
 mongoose
   .connect(process.env.db, {

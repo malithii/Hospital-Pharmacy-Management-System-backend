@@ -40,11 +40,11 @@ export const updateWardUser = async (req, res, next) => {
         _id: _id,
       },
       {
-        username,
-        password,
-        wardNo,
-        wardContact,
-        wardEmail,
+        username: username,
+        password: password,
+        wardNo: wardNo,
+        wardContact: wardContact,
+        wardEmail: wardEmail,
       }
     );
     res.status(201).json({ status: "success", wardUser: wardUser });
