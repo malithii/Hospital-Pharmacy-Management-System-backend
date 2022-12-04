@@ -11,6 +11,6 @@ const router = Router();
 router.post("/new-drug", newDrug);
 router.post("/update-drug", updateDrug);
 router.post("/remove-drug", removeDrug);
-router.get("/all-drugs", getAlldrugs);
+router.post("/all-drugs", getAlldrugs);
 
 export default router;

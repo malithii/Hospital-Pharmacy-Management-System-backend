@@ -24,5 +24,5 @@ const wardUserSchema = new mongoose.Schema({
   },
 });
 
-const WardUser = mongoose.model("wardUser", wardUserSchema);
+const WardUser = mongoose.model("warduser", wardUserSchema);
 export default WardUser;
