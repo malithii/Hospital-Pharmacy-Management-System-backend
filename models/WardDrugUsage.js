@@ -23,6 +23,7 @@ const wardDrugUsageSchema = new mongoose.Schema(
     quantity: {
       type: Number,
     },
+    //Strength
   },
   { timestamps: true }
 );
