@@ -1,16 +1,16 @@
 import WardDrugUsage from "../models/WardDrugUsage.js";
 
 export const newDrugUsage = async (req, res, next) => {
-  const { date, wardId, drugId, batchNo, bhtNo, amount } = req.body;
+  const { date, wardNo, drugName, batchNo, bht, quantity } = req.body;
 
   try {
     const drugUsage = await WardDrugUsage.create({
       date,
-      wardId,
-      drugId,
+      wardNo,
+      drugName,
       batchNo,
-      bhtNo,
-      amount,
+      bht,
+      quantity,
     });
     res.status(201).json({ status: "success", drugUsage: drugUsage });
   } catch (error) {
@@ -20,11 +20,10 @@ export const newDrugUsage = async (req, res, next) => {
   }
 };
 
-export const getDrugUsage = async (req, res, next) => {
+export const getDrugUsageByDate = async (req, res, next) => {
   try {
-    const drugUsage = await WardDrugUsage.findById({
-      date,
-    });
+    const { date, wardNo } = req.body;
+    const drugUsage = await WardDrugUsage.find({ date, wardNo });
     res.status(201).json({ status: "success", drugUsage: drugUsage });
   } catch (error) {
     console.log(error);

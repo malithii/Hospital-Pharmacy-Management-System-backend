@@ -1,9 +1,12 @@
 import { Router } from "express";
-import { newDrugUsage } from "../controllers/wardDrugUsageController.js";
+import {
+  getDrugUsageByDate,
+  newDrugUsage,
+} from "../controllers/wardDrugUsageController.js";
 
 const router = Router();
 
 router.post("/new-drug-usage", newDrugUsage);
-router.post("/get-drugusage-bydate", newDrugUsage);
+router.post("/view-bydate", getDrugUsageByDate);
 
 export default router;

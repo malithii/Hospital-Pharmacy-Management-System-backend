@@ -5,9 +5,9 @@ const orderSchema = new mongoose.Schema({
     type: Date,
     required: true,
   },
-  drugId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "drug",
+  drugName: {
+    type: String,
+    required: true,
   },
   quantityOrder: {
     type: Number,
