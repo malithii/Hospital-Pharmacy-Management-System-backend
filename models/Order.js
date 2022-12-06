@@ -10,19 +10,19 @@ const orderSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    quantityOrder: {
+    quantity: {
       type: Number,
       required: true,
     },
     // isConfiremed: {
     //   type: boolean,
     // },
-    quantityIssue: {
-      type: Number,
-    },
-    quantityRecieved: {
-      type: Number,
-    },
+    // quantityIssue: {
+    //   type: Number,
+    // },
+    // quantityRecieved: {
+    //   type: Number,
+    // },
   },
   {
     timestamps: true,

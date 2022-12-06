@@ -6,6 +6,8 @@ import pharmacistRoutes from "./routes/pharmacistRoutes.js";
 import wardUserRoutes from "./routes/wardUserRoutes.js";
 import drugsRoutes from "./routes/drugsRoutes.js";
 import wardDrugUsageRoutes from "./routes/wardDrugUsageRoutes.js";
+import orderRoutes from "./routes/orderRoutes.js";
+import cookieParser from "cookie-parser";
 
 dotenv.config();
 
@@ -13,11 +15,13 @@ const app = express();
 app.use(cors());
 
 app.use(express.json());
+app.use(cookieParser());
 
 app.use("/pharmacist", pharmacistRoutes);
 app.use("/ward-users", wardUserRoutes);
 app.use("/drugs", drugsRoutes);
 app.use("/drug-usage", wardDrugUsageRoutes);
+app.use("/orders", orderRoutes);
 
 mongoose
   .connect(process.env.db, {
