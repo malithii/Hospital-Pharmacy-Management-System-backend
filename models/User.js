@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 
-const wardUserSchema = new mongoose.Schema({
+const userSchema = new mongoose.Schema({
   username: {
     type: String,
     required: true,
@@ -29,23 +29,23 @@ const wardUserSchema = new mongoose.Schema({
   },
 });
 
-wardUserSchema.pre("save", async function (next) {
+userSchema.pre("save", async function (next) {
   const salt = await bcrypt.genSalt();
   this.password = await bcrypt.hash(this.password, salt);
   next();
 });
 
-wardUserSchema.statics.login = async function (username, password) {
-  const wardUser = await this.findOne({ username });
-  if (wardUser) {
-    const auth = await bcrypt.compare(password, wardUser.password);
+userSchema.statics.login = async function (username, password) {
+  const user = await this.findOne({ username });
+  if (user) {
+    const auth = await bcrypt.compare(password, user.password);
     if (auth) {
-      return wardUser;
+      return user;
     }
     throw Error("incorrect password");
   }
   throw Error("user not found");
 };
 
-const WardUser = mongoose.model("warduser", wardUserSchema);
-export default WardUser;
+const User = mongoose.model("user", userSchema);
+export default User;

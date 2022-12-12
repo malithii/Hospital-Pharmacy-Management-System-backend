@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
 import pharmacistRoutes from "./routes/pharmacistRoutes.js";
-import wardUserRoutes from "./routes/wardUserRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
 import drugsRoutes from "./routes/drugsRoutes.js";
 import wardDrugUsageRoutes from "./routes/wardDrugUsageRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
@@ -18,7 +18,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.use("/pharmacist", pharmacistRoutes);
-app.use("/ward-users", wardUserRoutes);
+app.use("/users", userRoutes);
 app.use("/drugs", drugsRoutes);
 app.use("/drug-usage", wardDrugUsageRoutes);
 app.use("/orders", orderRoutes);
