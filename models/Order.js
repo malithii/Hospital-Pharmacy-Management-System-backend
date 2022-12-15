@@ -2,27 +2,29 @@ import mongoose from "mongoose";
 
 const orderSchema = new mongoose.Schema(
   {
-    date: {
-      type: Date,
-      required: true,
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "user",
     },
-    drugName: {
-      type: String,
-      required: true,
-    },
-    quantity: {
-      type: Number,
-      required: true,
-    },
-    // isConfiremed: {
-    //   type: boolean,
-    // },
-    // quantityIssue: {
-    //   type: Number,
-    // },
-    // quantityRecieved: {
-    //   type: Number,
-    // },
+    orderItems: [
+      {
+        drug: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "drugs",
+        },
+        quantityOrdered: {
+          type: Number,
+        },
+        batch: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "inventory",
+        },
+        quantityIssued: {
+          type: Number,
+          required: true,
+        },
+      },
+    ],
   },
   {
     timestamps: true,

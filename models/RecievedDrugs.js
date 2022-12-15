@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const wardDrugUsageSchema = new mongoose.Schema(
+const recievedDrugsSchema = new mongoose.Schema(
   {
     user: {
       type: mongoose.Schema.Types.ObjectId,
@@ -9,17 +9,17 @@ const wardDrugUsageSchema = new mongoose.Schema(
     date: {
       type: Date,
     },
-    drugUsage: [
+    recievedDrugs: [
       {
-        drugName: {
+        drug: {
           type: mongoose.Schema.Types.ObjectId,
           ref: "drug",
         },
         batchNo: {
           type: String,
         },
-        bht: {
-          type: Number,
+        expDate: {
+          type: Date,
         },
         quantity: {
           type: Number,
@@ -30,5 +30,5 @@ const wardDrugUsageSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const WardDrugUsage = mongoose.model("warddrugusage", wardDrugUsageSchema);
-export default WardDrugUsage;
+const RecievedDrugs = mongoose.model("recieveddrugs", recievedDrugsSchema);
+export default RecievedDrugs;

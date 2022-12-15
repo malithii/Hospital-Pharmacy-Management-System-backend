@@ -1,18 +1,15 @@
 import WardDrugUsage from "../models/WardDrugUsage.js";
 
 export const newDrugUsage = async (req, res, next) => {
-  const { date, wardNo, drugName, batchNo, bht, quantity } = req.body;
+  const { user, date, drugUsage } = req.body;
 
   try {
-    const drugUsage = await WardDrugUsage.create({
+    const usage = await WardDrugUsage.create({
+      user,
       date,
-      wardNo,
-      drugName,
-      batchNo,
-      bht,
-      quantity,
+      drugUsage,
     });
-    res.status(201).json({ status: "success", drugUsage: drugUsage });
+    res.status(201).json({ status: "success", usage: usage });
   } catch (error) {
     console.log(error);
     res.status(400).json({ error: "drug usage data not added" });

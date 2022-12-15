@@ -2,7 +2,6 @@ import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
-import pharmacistRoutes from "./routes/pharmacistRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import drugsRoutes from "./routes/drugsRoutes.js";
 import wardDrugUsageRoutes from "./routes/wardDrugUsageRoutes.js";
@@ -17,7 +16,6 @@ app.use(cors());
 app.use(express.json());
 app.use(cookieParser());
 
-app.use("/pharmacist", pharmacistRoutes);
 app.use("/users", userRoutes);
 app.use("/drugs", drugsRoutes);
 app.use("/drug-usage", wardDrugUsageRoutes);

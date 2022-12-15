@@ -1,4 +1,4 @@
-import Drugs from "../models/Drugs.js";
+import Drugs from "../models/Drug.js";
 
 export const newDrug = async (req, res, next) => {
   const { drugId, drugName, category, description, level, storeTemp } =
@@ -13,6 +13,7 @@ export const newDrug = async (req, res, next) => {
       level,
       storeTemp,
     });
+
     res.status(201).json({ status: "success", drug: drug });
   } catch (error) {
     console.log(error);
