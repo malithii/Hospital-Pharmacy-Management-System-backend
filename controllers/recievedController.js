@@ -1,14 +1,62 @@
+import Inventory from "../models/Inventory.js";
 import RecievedDrugs from "../models/RecievedDrugs.js";
 
 //new recieved drugs
 export const newRecievedDrugs = async (req, res, next) => {
-  const { date, recievedDrugs } = req.body;
+  const { user, date, recievedDrugs } = req.body;
 
   try {
     const recievedDrug = await RecievedDrugs.create({
+      user,
       date,
       recievedDrugs,
     });
+
+    for (let i = 0; i < recievedDrugs.length; i++) {
+      const drug = recievedDrugs[i].drug;
+      const batchNo = recievedDrugs[i].batchNo;
+      const expDate = recievedDrugs[i].expDate;
+      const quantity = recievedDrugs[i].quantity;
+
+      const inventory = await Inventory.findOne({ user: user });
+
+      const index = inventory.inventory.findIndex(
+        (item) => item.drug.toString() === drug.toString()
+      );
+
+      if (index !== -1) {
+        const batchIndex = inventory.inventory[index].batch.findIndex(
+          (item) => item.batchNo === batchNo
+        );
+        if (batchIndex !== -1) {
+          inventory.inventory[index].batch[batchIndex].quantity =
+            inventory.inventory[index].batch[batchIndex].quantity + quantity;
+        } else {
+          inventory.inventory[index].batch.push({
+            batchNo,
+            expDate,
+            quantity,
+          });
+        }
+        inventory.inventory[index].quantityInStock =
+          inventory.inventory[index].quantityInStock + quantity;
+      } else {
+        inventory.inventory.push({
+          drug,
+          batch: [
+            {
+              batchNo,
+              expDate,
+              quantity,
+            },
+          ],
+          quantityInStock: quantity,
+          reorderLevel: 0,
+        });
+      }
+
+      await inventory.save();
+    }
 
     const drug = await RecievedDrugs.findById(recievedDrug._id).populate(
       "recievedDrugs.drug"

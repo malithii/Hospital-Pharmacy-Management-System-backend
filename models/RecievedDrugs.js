@@ -2,10 +2,10 @@ import mongoose from "mongoose";
 
 const recievedDrugsSchema = new mongoose.Schema(
   {
-    // user: {
-    //   type: mongoose.Schema.Types.ObjectId,
-    //   ref: "user",
-    // },
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "user",
+    },
     date: {
       type: Date,
     },

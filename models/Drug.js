@@ -9,17 +9,17 @@ const drugSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  strength: {
+    type: String,
+  },
   category: {
     type: String,
     required: true,
   },
-  description: {
-    type: String,
-  },
-  level: {
-    type: String,
-  },
   storeTemp: {
+    type: String,
+  },
+  description: {
     type: String,
   },
 });

@@ -7,6 +7,7 @@ import drugsRoutes from "./routes/drugsRoutes.js";
 import wardDrugUsageRoutes from "./routes/wardDrugUsageRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
 import recievedDrugsRoutes from "./routes/recievedDrugsRoutes.js";
+import inventoryRoutes from "./routes/inventoryRoutes.js";
 import cookieParser from "cookie-parser";
 
 dotenv.config();
@@ -22,6 +23,7 @@ app.use("/drugs", drugsRoutes);
 app.use("/drug-usage", wardDrugUsageRoutes);
 app.use("/orders", orderRoutes);
 app.use("/recieved-drugs", recievedDrugsRoutes);
+app.use("/inventory", inventoryRoutes);
 
 mongoose
   .connect(process.env.db, {

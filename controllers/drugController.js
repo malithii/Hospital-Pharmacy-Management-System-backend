@@ -1,17 +1,17 @@
 import Drugs from "../models/Drug.js";
 
 export const newDrug = async (req, res, next) => {
-  const { drugId, drugName, category, description, level, storeTemp } =
+  const { drugId, drugName, strength, category, storeTemp, description } =
     req.body;
 
   try {
     const drug = await Drugs.create({
       drugId,
       drugName,
+      strength,
       category,
-      description,
-      level,
       storeTemp,
+      description,
     });
 
     res.status(201).json({ status: "success", drug: drug });
@@ -23,7 +23,7 @@ export const newDrug = async (req, res, next) => {
 };
 
 export const updateDrug = async (req, res, next) => {
-  const { _id, drugId, drugName, category, description, level, storeTemp } =
+  const { _id, drugId, drugName, strength, category, storeTemp, description } =
     req.body;
 
   try {
@@ -34,10 +34,10 @@ export const updateDrug = async (req, res, next) => {
       {
         drugId,
         drugName,
+        strength,
         category,
-        description,
-        level,
         storeTemp,
+        description,
       }
     );
     res.status(201).json({ status: "success", drug: drug });

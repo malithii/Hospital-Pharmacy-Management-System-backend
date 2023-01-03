@@ -47,7 +47,7 @@ export const newUser = async (req, res, next) => {
 };
 
 export const updateUser = async (req, res, next) => {
-  const { _id, username, password, wardNo, wardContact, wardEmail } = req.body;
+  const { _id, username, password, wardNo, contact, email, type } = req.body;
 
   try {
     const user = await User.findByIdAndUpdate(
@@ -55,12 +55,14 @@ export const updateUser = async (req, res, next) => {
         _id: _id,
       },
       {
-        username: username,
-        password: password,
-        wardNo: wardNo,
-        wardContact: wardContact,
-        wardEmail: wardEmail,
-      }
+        username,
+        password,
+        wardNo,
+        contact,
+        email,
+        type,
+      },
+      { new: true }
     );
     res.status(201).json({ status: "success", user: user });
   } catch (error) {
