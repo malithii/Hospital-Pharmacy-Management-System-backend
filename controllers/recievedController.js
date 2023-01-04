@@ -18,7 +18,13 @@ export const newRecievedDrugs = async (req, res, next) => {
       const expDate = recievedDrugs[i].expDate;
       const quantity = recievedDrugs[i].quantity;
 
-      const inventory = await Inventory.findOne({ user: user });
+      let inventory = await Inventory.findOne({ user: user });
+      if (!inventory) {
+        // Create a new inventory for that user
+        inventory = await Inventory.create({
+          user,
+        });
+      }
 
       const index = inventory.inventory.findIndex(
         (item) => item.drug.toString() === drug.toString()

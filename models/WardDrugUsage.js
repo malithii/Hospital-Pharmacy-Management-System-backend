@@ -9,24 +9,21 @@ const wardDrugUsageSchema = new mongoose.Schema(
     date: {
       type: Date,
     },
-    drugUsage: [
-      {
-        drugName: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "drug",
-        },
-        batchNo: {
-          type: String,
-        },
-        bht: {
-          type: Number,
-        },
-        quantity: {
-          type: Number,
-        },
-      },
-    ],
+    drugName: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "drug",
+    },
+    batchNo: {
+      type: String,
+    },
+    bht: {
+      type: Number,
+    },
+    quantity: {
+      type: Number,
+    },
   },
+
   { timestamps: true }
 );
 

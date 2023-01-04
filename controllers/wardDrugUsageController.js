@@ -1,14 +1,39 @@
+import Inventory from "../models/Inventory.js";
 import WardDrugUsage from "../models/WardDrugUsage.js";
 
 export const newDrugUsage = async (req, res, next) => {
-  const { user, date, drugUsage } = req.body;
+  const { user, date, drugName, batchNo, bht, quantity } = req.body;
 
   try {
     const usage = await WardDrugUsage.create({
       user,
       date,
-      drugUsage,
+      drugName,
+      batchNo,
+      bht,
+      quantity,
     });
+
+    const inventory = await Inventory.findOne({ user: user });
+
+    const index = inventory.inventory.findIndex(
+      (item) => item.drug.toString() === drugName.toString()
+    );
+
+    if (index !== -1) {
+      const batchIndex = inventory.inventory[index].batch.findIndex(
+        (item) => item.batchNo === batchNo
+      );
+      if (batchIndex !== -1) {
+        inventory.inventory[index].batch[batchIndex].quantity =
+          inventory.inventory[index].batch[batchIndex].quantity - quantity;
+      }
+      inventory.inventory[index].quantityInStock =
+        inventory.inventory[index].quantityInStock - quantity;
+    }
+
+    await inventory.save();
+
     res.status(201).json({ status: "success", usage: usage });
   } catch (error) {
     console.log(error);
