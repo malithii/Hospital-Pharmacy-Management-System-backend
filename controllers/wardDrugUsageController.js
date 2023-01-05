@@ -1,23 +1,24 @@
+import mongoose from "mongoose";
 import Inventory from "../models/Inventory.js";
 import WardDrugUsage from "../models/WardDrugUsage.js";
 
 export const newDrugUsage = async (req, res, next) => {
-  const { user, date, drugName, batchNo, bht, quantity } = req.body;
+  const { user, date, drug, batchNo, bht, quantitytoBHT } = req.body;
 
   try {
     const usage = await WardDrugUsage.create({
       user,
       date,
-      drugName,
+      drug,
       batchNo,
       bht,
-      quantity,
+      quantitytoBHT,
     });
 
     const inventory = await Inventory.findOne({ user: user });
 
     const index = inventory.inventory.findIndex(
-      (item) => item.drug.toString() === drugName.toString()
+      (item) => item.drug.toString() === drug.toString() //String or Number?
     );
 
     if (index !== -1) {
@@ -26,10 +27,10 @@ export const newDrugUsage = async (req, res, next) => {
       );
       if (batchIndex !== -1) {
         inventory.inventory[index].batch[batchIndex].quantity =
-          inventory.inventory[index].batch[batchIndex].quantity - quantity;
+          inventory.inventory[index].batch[batchIndex].quantity - quantitytoBHT;
       }
       inventory.inventory[index].quantityInStock =
-        inventory.inventory[index].quantityInStock - quantity;
+        inventory.inventory[index].quantityInStock - quantitytoBHT;
     }
 
     await inventory.save();
@@ -42,24 +43,57 @@ export const newDrugUsage = async (req, res, next) => {
   }
 };
 
-export const getDrugUsageByDate = async (req, res, next) => {
+export const getALLDrugUsage = async (req, res, next) => {
+  const { user } = req.body;
   try {
-    const { date, wardNo } = req.body;
-    const drugUsage = await WardDrugUsage.find({ date, wardNo }, { wardNo: 0 });
+    const drugUsage = await WardDrugUsage.find({ user }).populate("drug");
+
     res.status(201).json({ status: "success", drugUsage: drugUsage });
   } catch (error) {
     console.log(error);
-    res.status(400).json({ error: "drug usage could not get" });
+    res.status(400).json({ error: "Could not find drug usage details" });
     next();
   }
 };
 
-export const allDrugUsages = async (req, res, next) => {
-  const { wardNo } = req.body;
+export const getDrugUsageByMonth = async (req, res, next) => {
+  const { user } = req.body;
   try {
-    const drugUsage = await WardDrugUsage.find({ wardNo });
+    const drugUsage = await WardDrugUsage.aggregate([
+      {
+        $match: {
+          user: mongoose.Types.ObjectId(user),
+        },
+      },
+      {
+        $lookup: {
+          from: "drugs", //model
+          localField: "drug", //field in current model
+          foreignField: "_id", //field in other model
+          as: "drug",
+        },
+      },
+      {
+        $group: {
+          _id: {
+            drug: "$drug",
+            month: { $month: "$date" },
+          },
+          total: { $sum: "$quantitytoBHT" },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          drug: "$_id.drug",
+          month: "$_id.month",
+          total: 1,
+        },
+      },
+    ]);
+    console.log(drugUsage);
 
-    res.status(201).json({ status: "success", drugUsage: drugUsage });
+    res.status(200).json({ status: "success", drugUsage: drugUsage });
   } catch (error) {
     console.log(error);
     res.status(400).json({ error: "Could not find drug usage details" });

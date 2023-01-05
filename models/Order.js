@@ -6,6 +6,13 @@ const orderSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "user",
     },
+    date: {
+      type: Date,
+    },
+    status: {
+      type: String,
+      default: "PENDING",
+    },
     orderItems: [
       {
         drug: {
@@ -15,18 +22,23 @@ const orderSchema = new mongoose.Schema(
         quantityOrdered: {
           type: Number,
         },
-        batch: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "inventory",
-        },
-        quantityIssued: {
-          type: Number,
-          required: true,
-        },
-        quantityRecieved: {
-          type: Number,
-          required: true,
-        },
+
+        issueDrugs: [
+          {
+            batch: {
+              type: mongoose.Schema.Types.ObjectId,
+              ref: "inventory",
+            },
+            quantityIssued: {
+              type: Number,
+              default: 0,
+            },
+            quantityRecieved: {
+              type: Number,
+              default: 0,
+            },
+          },
+        ],
       },
     ],
   },

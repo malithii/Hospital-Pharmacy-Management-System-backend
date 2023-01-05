@@ -9,7 +9,7 @@ const wardDrugUsageSchema = new mongoose.Schema(
     date: {
       type: Date,
     },
-    drugName: {
+    drug: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "drug",
     },
@@ -19,8 +19,12 @@ const wardDrugUsageSchema = new mongoose.Schema(
     bht: {
       type: Number,
     },
-    quantity: {
+    quantitytoBHT: {
       type: Number,
+    },
+    quantityfromBHT: {
+      type: Number,
+      default: 0,
     },
   },
 
