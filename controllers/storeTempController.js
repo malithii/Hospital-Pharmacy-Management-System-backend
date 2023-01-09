@@ -4,6 +4,7 @@ export const newStoreTemp = async (req, res, next) => {
   const { name, range } = req.body;
   try {
     const storeTemp = await StoreTemp.create({
+      id: `${name}: ${range}`,
       name,
       range,
     });

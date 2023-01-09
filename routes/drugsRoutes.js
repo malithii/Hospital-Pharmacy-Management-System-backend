@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
   getAlldrugs,
+  getDrugIds,
   newDrug,
   removeDrug,
   updateDrug,
@@ -12,5 +13,6 @@ router.post("/new-drug", newDrug);
 router.post("/update-drug", updateDrug);
 router.post("/remove-drug", removeDrug);
 router.post("/all-drugs", getAlldrugs);
+router.post("/drug-by-id", getDrugIds);
 
 export default router;

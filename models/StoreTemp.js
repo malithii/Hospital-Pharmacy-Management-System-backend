@@ -1,6 +1,9 @@
 import mongoose from "mongoose";
 
 const storeTempSchema = new mongoose.Schema({
+  id: {
+    type: String,
+  },
   name: {
     type: String,
   },

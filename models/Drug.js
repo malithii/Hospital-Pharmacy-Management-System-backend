@@ -13,11 +13,12 @@ const drugSchema = new mongoose.Schema({
     type: String,
   },
   category: {
-    type: String,
-    required: true,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "category",
   },
   storeTemp: {
-    type: String,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "storetemp",
   },
   description: {
     type: String,

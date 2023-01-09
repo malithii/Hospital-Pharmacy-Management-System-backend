@@ -16,7 +16,7 @@ export const newCategory = async (req, res, next) => {
 
 export const getAllCategories = async (req, res, next) => {
   try {
-    const categories = await Category.find({});
+    const categories = await Category.find({}, { name: 1 });
     res.status(201).json({ status: "success", categories: categories });
   } catch (error) {
     res.status(400).json({ error: "could not find categories" });

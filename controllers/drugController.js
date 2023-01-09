@@ -64,7 +64,19 @@ export const removeDrug = async (req, res, next) => {
 
 export const getAlldrugs = async (req, res, next) => {
   try {
-    const drug = await Drugs.find({});
+    const drug = await Drugs.find({}).populate("category storeTemp");
+    res.status(201).json({ status: "success", drug: drug });
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ error: "could not find drugs" });
+    next();
+  }
+};
+
+export const getDrugIds = async (req, res, next) => {
+  try {
+    const drug = await Drugs.find({}, { drugId: 1, _id: 1 });
+
     res.status(201).json({ status: "success", drug: drug });
   } catch (error) {
     console.log(error);
