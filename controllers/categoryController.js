@@ -67,3 +67,14 @@ export const drugCategoryChart = async (req, res, next) => {
     next();
   }
 };
+
+export const updateCategory = async (req, res, next) => {
+  const { _id, name } = req.body;
+  try {
+    const category = await Category.findByIdAndUpdate({ _id }, { name });
+    res.status(200).json({ status: "success", category: category });
+  } catch (error) {
+    res.status(400).json({ error: "category not updated" });
+    next();
+  }
+};

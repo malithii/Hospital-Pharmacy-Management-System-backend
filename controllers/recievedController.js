@@ -75,3 +75,16 @@ export const newRecievedDrugs = async (req, res, next) => {
     next();
   }
 };
+
+export const getAllRecievedDrugs = async (req, res, next) => {
+  try {
+    const recievedDrug = await RecievedDrugs.find({}).populate(
+      "recievedDrugs.drug"
+    );
+    res.status(201).json({ status: "success", recievedDrug: recievedDrug });
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ error: "could not find recieved drugs" });
+    next();
+  }
+};

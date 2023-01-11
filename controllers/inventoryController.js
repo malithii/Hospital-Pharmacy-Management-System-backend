@@ -38,7 +38,7 @@ export const getInventory = async (req, res, next) => {
 
 export const getAllInventory = async (req, res, next) => {
   try {
-    const inventory = await Inventory.find().populate("inventory.drug");
+    const inventory = await Inventory.find({}).populate("inventory.drug");
 
     res.status(201).json({ status: "success", inventory: inventory });
   } catch (error) {
