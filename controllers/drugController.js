@@ -84,3 +84,21 @@ export const getDrugIds = async (req, res, next) => {
     next();
   }
 };
+
+export const drugCategoryChart = async (req, res, next) => {
+  try {
+    const drug = await Drugs.aggregate([
+      {
+        $group: {
+          _id: "$category",
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+    res.status(201).json({ status: "success", drug: drug });
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ error: "could not find drugs" });
+    next();
+  }
+};
