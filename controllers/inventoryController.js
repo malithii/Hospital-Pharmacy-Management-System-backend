@@ -1,3 +1,4 @@
+import Category from "../models/Category.js";
 import Inventory from "../models/Inventory.js";
 
 export const newInventory = async (req, res, next) => {
@@ -27,6 +28,12 @@ export const getInventory = async (req, res, next) => {
     const inventory = await Inventory.findOne({ user: user }).populate(
       "inventory.drug"
     );
+    for (let i = 0; i < inventory.inventory.length; i++) {
+      const category = await Category.findById(
+        inventory.inventory[i].drug.category
+      );
+      inventory.inventory[i].drug.category = category;
+    }
 
     res.status(201).json({ status: "success", inventory: inventory });
   } catch (error) {
