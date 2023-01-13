@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import Inventory from "../models/Inventory.js";
 import RecievedDrugs from "../models/RecievedDrugs.js";
 
@@ -81,6 +82,40 @@ export const getAllRecievedDrugs = async (req, res, next) => {
     const recievedDrug = await RecievedDrugs.find({}).populate(
       "recievedDrugs.drug"
     );
+    res.status(201).json({ status: "success", recievedDrug: recievedDrug });
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ error: "could not find recieved drugs" });
+    next();
+  }
+};
+
+//unwind recieved drugs
+
+export const getRecieved = async (req, res, next) => {
+  const { user } = req.body;
+  try {
+    const recievedDrug = await RecievedDrugs.aggregate([
+      {
+        $match: {
+          user: mongoose.Types.ObjectId(user),
+        },
+      },
+      {
+        $unwind: "$recievedDrugs",
+      },
+      {
+        $lookup: {
+          from: "drugs",
+          localField: "recievedDrugs.drug",
+          foreignField: "_id",
+          as: "drug",
+        },
+      },
+      {
+        $unwind: "$drug",
+      },
+    ]);
     res.status(201).json({ status: "success", recievedDrug: recievedDrug });
   } catch (error) {
     console.log(error);

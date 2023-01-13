@@ -14,7 +14,7 @@ export const newDrugUsage = async (req, res, next) => {
       bht,
       quantitytoBHT,
     });
-
+    //TODO: avoid saving minus values
     const inventory = await Inventory.findOne({ user: user });
 
     const index = inventory.inventory.findIndex(
