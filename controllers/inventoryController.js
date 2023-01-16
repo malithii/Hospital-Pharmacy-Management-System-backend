@@ -26,7 +26,7 @@ export const getInventory = async (req, res, next) => {
 
   try {
     const inventory = await Inventory.findOne({ user: user }).populate(
-      "inventory.drug"
+      "inventory.drug user"
     );
     for (let i = 0; i < inventory.inventory.length; i++) {
       const category = await Category.findById(
@@ -48,6 +48,35 @@ export const getAllInventory = async (req, res, next) => {
     const inventory = await Inventory.find({}).populate("inventory.drug");
 
     res.status(201).json({ status: "success", inventory: inventory });
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ error: "cannot get inventory data" });
+    next();
+  }
+};
+
+export const getWardInventory = async (req, res, next) => {
+  try {
+    const inventory = await Inventory.aggregate([
+      {
+        $lookup: {
+          from: "users",
+          localField: "user",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      {
+        $unwind: "$user",
+      },
+      {
+        $match: {
+          "user.type": "PHARMACIST",
+        },
+      },
+    ]);
+
+    res.status(200).json({ status: "success", inventory: inventory });
   } catch (error) {
     console.log(error);
     res.status(400).json({ error: "cannot get inventory data" });
