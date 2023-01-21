@@ -2,7 +2,11 @@ import mongoose from "mongoose";
 
 const orderSchema = new mongoose.Schema(
   {
-    user: {
+    pharmacist: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "user",
+    },
+    wardUser: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "user",
     },
@@ -39,6 +43,12 @@ const orderSchema = new mongoose.Schema(
             },
           },
         ],
+        totalIssued: {
+          type: Number,
+        },
+        totalRecieved: {
+          type: Number,
+        },
       },
     ],
   },

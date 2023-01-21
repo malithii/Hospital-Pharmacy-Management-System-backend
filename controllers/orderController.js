@@ -2,11 +2,11 @@ import Inventory from "../models/Inventory.js";
 import Order from "../models/Order.js";
 
 export const newOrder = async (req, res, next) => {
-  const { user, date, orderItems } = req.body;
+  const { wardUser, date, orderItems } = req.body;
 
   try {
     const order = await Order.create({
-      user,
+      wardUser,
       date,
       orderItems,
     });
@@ -21,7 +21,7 @@ export const newOrder = async (req, res, next) => {
 
 export const getOrders = async (req, res, next) => {
   try {
-    const order = await Order.find({}).populate("user");
+    const order = await Order.find({}).populate("pharmacist wardUser");
     res.status(201).json({ status: "success", order: order });
   } catch (error) {
     console.log(error);
@@ -31,31 +31,51 @@ export const getOrders = async (req, res, next) => {
 };
 
 export const acceptOrder = async (req, res, next) => {
-  const { user, _id, orderItems } = req.body;
+  const { pharmacist, wardUser, _id, orderItems } = req.body;
 
   try {
     const order = await Order.findById(_id);
     order.status = "ACCEPTED";
-    const inventory = await Inventory.findOne({ user: user }); //user pharmacist
+    const inventory = await Inventory.findOne({ user: pharmacist }); //user pharmacist
     for (let i = 0; i < orderItems.length; i++) {
       const index = inventory.inventory.findIndex(
         (item) => item.drug.toString() === orderItems[i].drug.toString()
       );
-
-      if (index !== -1) {
+      for (let j = 0; j < orderItems[i].issueDrugs.length; j++) {
         const batchIndex = inventory.inventory[index].batch.findIndex(
-          (item) => item.batchNo === orderItems[i].batch.batchNo
+          (item) => item.batchNo === orderItems[i].issueDrugs[j].batch
         );
         if (batchIndex !== -1) {
           inventory.inventory[index].batch[batchIndex].quantity =
             inventory.inventory[index].batch[batchIndex].quantity -
-            orderItems[i].quantityOrdered;
+            orderItems[i].issueDrugs[j].quantityIssued;
         }
         inventory.inventory[index].quantityInStock =
           inventory.inventory[index].quantityInStock -
-          orderItems[i].quantityOrdered;
+          orderItems[i].issueDrugs[j].quantityIssued;
+
+        // order.orderItems[i].totalIssued =
+        //   order.orderItems[i].totalIssued +
+        //   orderItems[i].issueDrugs[j].quantityIssued;
       }
+
+      // if (index !== -1) {
+      //   const batchIndex = inventory.inventory[index].batch.findIndex(
+      //     (item) => item.batchNo === orderItems[i].batch.batchNo
+      //   );
+      //   if (batchIndex !== -1) {
+      //     inventory.inventory[index].batch[batchIndex].quantity =
+      //       inventory.inventory[index].batch[batchIndex].quantity -
+      //       orderItems[i].quantityOrdered;
+      //   }
+      //   inventory.inventory[index].quantityInStock =
+      //     inventory.inventory[index].quantityInStock -
+      //     orderItems[i].quantityOrdered;
+      // }
     }
+    await inventory.save();
+    await order.save();
+    res.status(201).json({ status: "success", order: order });
   } catch (error) {
     console.log(error);
     res.status(400).json({ error: "could not find orders" });

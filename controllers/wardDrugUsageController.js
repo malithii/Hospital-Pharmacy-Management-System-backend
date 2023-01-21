@@ -3,7 +3,8 @@ import Inventory from "../models/Inventory.js";
 import WardDrugUsage from "../models/WardDrugUsage.js";
 
 export const newDrugUsage = async (req, res, next) => {
-  const { user, date, drug, batchNo, bht, quantitytoBHT } = req.body;
+  const { user, date, drug, batchNo, bht, quantitytoBHT, quantityfromBHT } =
+    req.body;
 
   try {
     const usage = await WardDrugUsage.create({
@@ -13,27 +14,28 @@ export const newDrugUsage = async (req, res, next) => {
       batchNo,
       bht,
       quantitytoBHT,
+      quantityfromBHT,
     });
     //TODO: avoid saving minus values
-    const inventory = await Inventory.findOne({ user: user });
+    // const inventory = await Inventory.findOne({ user: user });
 
-    const index = inventory.inventory.findIndex(
-      (item) => item.drug.toString() === drug.toString() //String or Number?
-    );
+    // const index = inventory.inventory.findIndex(
+    //   (item) => item.drug.toString() === drug.toString() //String or Number?
+    // );
 
-    if (index !== -1) {
-      const batchIndex = inventory.inventory[index].batch.findIndex(
-        (item) => item.batchNo === batchNo
-      );
-      if (batchIndex !== -1) {
-        inventory.inventory[index].batch[batchIndex].quantity =
-          inventory.inventory[index].batch[batchIndex].quantity - quantitytoBHT;
-      }
-      inventory.inventory[index].quantityInStock =
-        inventory.inventory[index].quantityInStock - quantitytoBHT;
-    }
+    // if (index !== -1) {
+    //   const batchIndex = inventory.inventory[index].batch.findIndex(
+    //     (item) => item.batchNo === batchNo
+    //   );
+    //   if (batchIndex !== -1) {
+    //     inventory.inventory[index].batch[batchIndex].quantity =
+    //       inventory.inventory[index].batch[batchIndex].quantity - quantitytoBHT;
+    //   }
+    //   inventory.inventory[index].quantityInStock =
+    //     inventory.inventory[index].quantityInStock - quantitytoBHT;
+    // }
 
-    await inventory.save();
+    // await inventory.save();
 
     res.status(201).json({ status: "success", usage: usage });
   } catch (error) {
@@ -92,6 +94,19 @@ export const getDrugUsageByMonth = async (req, res, next) => {
       },
     ]);
     console.log(drugUsage);
+
+    res.status(200).json({ status: "success", drugUsage: drugUsage });
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ error: "Could not find drug usage details" });
+    next();
+  }
+};
+
+export const viewDrugUsageByDate = async (req, res, next) => {
+  const { user, date } = req.body;
+  try {
+    const drugUsage = await WardDrugUsage.find({ user, date }).populate("drug");
 
     res.status(200).json({ status: "success", drugUsage: drugUsage });
   } catch (error) {
