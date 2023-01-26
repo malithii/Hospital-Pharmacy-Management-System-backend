@@ -58,6 +58,16 @@ export const acceptOrder = async (req, res, next) => {
         //   order.orderItems[i].totalIssued +
         //   orderItems[i].issueDrugs[j].quantityIssued;
       }
+      console.log(orderItems[i].drug);
+      const orderItemIndex = order.orderItems.findIndex(
+        (item) => item.drug.toString() === orderItems[i].drug.toString()
+      );
+      if (orderItemIndex === -1) {
+        throw new Error("order item not found");
+      }
+      order.orderItems[orderItemIndex].issueDrugs.push(
+        ...orderItems[i].issueDrugs
+      );
 
       // if (index !== -1) {
       //   const batchIndex = inventory.inventory[index].batch.findIndex(

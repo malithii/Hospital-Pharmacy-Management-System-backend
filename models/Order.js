@@ -30,7 +30,7 @@ const orderSchema = new mongoose.Schema(
         issueDrugs: [
           {
             batch: {
-              type: mongoose.Schema.Types.ObjectId,
+              type: String,
               ref: "inventory",
             },
             quantityIssued: {
