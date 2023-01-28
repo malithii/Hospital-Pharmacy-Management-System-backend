@@ -30,6 +30,19 @@ export const getOrders = async (req, res, next) => {
   }
 };
 
+export const getPendingOrders = async (req, res, next) => {
+  try {
+    const order = await Order.find({ status: "PENDING" }).populate(
+      "pharmacist wardUser"
+    );
+    res.status(201).json({ status: "success", order: order });
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ error: "could not find orders" });
+    next();
+  }
+};
+
 export const acceptOrder = async (req, res, next) => {
   const { pharmacist, wardUser, _id, orderItems } = req.body;
 
