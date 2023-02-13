@@ -33,7 +33,7 @@ export const getOrders = async (req, res, next) => {
 export const getPendingOrders = async (req, res, next) => {
   try {
     const order = await Order.find({ status: "PENDING" }).populate(
-      "pharmacist wardUser"
+      "orderItems.drug pharmacist wardUser"
     );
     res.status(201).json({ status: "success", order: order });
   } catch (error) {

@@ -21,7 +21,7 @@ const orderSchema = new mongoose.Schema(
       {
         drug: {
           type: mongoose.Schema.Types.ObjectId,
-          ref: "drugs",
+          ref: "drug",
         },
         quantityOrdered: {
           type: Number,

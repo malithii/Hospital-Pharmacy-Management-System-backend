@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import Category from "../models/Category.js";
 import Inventory from "../models/Inventory.js";
 
@@ -36,6 +37,7 @@ export const getInventory = async (req, res, next) => {
     }
 
     res.status(201).json({ status: "success", inventory: inventory });
+    console.log(inventory.inventory.length);
   } catch (error) {
     console.log(error);
     res.status(400).json({ error: "cannot get inventory data" });
@@ -77,6 +79,79 @@ export const getWardInventory = async (req, res, next) => {
     ]);
 
     res.status(200).json({ status: "success", inventory: inventory });
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ error: "cannot get inventory data" });
+    next();
+  }
+};
+
+//get nearest expire date drugs in inventory
+
+export const getNearestExpireDates = async (req, res, next) => {
+  const { user } = req.body;
+
+  try {
+    // const inventory = await Inventory.findOne({ user: user }).populate(
+    //   "inventory.drug"
+    // );
+    const date = new Date();
+    const nearestEpireDates = await Inventory.aggregate([
+      {
+        $match: {
+          user: mongoose.Types.ObjectId(user),
+        },
+      },
+      {
+        $unwind: "$inventory",
+      },
+      {
+        $unwind: "$inventory.batch",
+      },
+
+      {
+        $project: {
+          _id: 0,
+          drug: "$inventory.drug",
+          batch: "$inventory.batch.batchNo",
+          expireDate: "$inventory.batch.expDate",
+        },
+      },
+      {
+        $lookup: {
+          from: "drugs", //model
+          localField: "drug", //field in current model
+          foreignField: "_id", //field in other model
+          as: "drug",
+        },
+      },
+      {
+        $unwind: "$drug",
+      },
+      {
+        $project: {
+          drug: "$drug.drugName",
+          batch: "$batch",
+          expireDate: "$expireDate",
+        },
+      },
+      {
+        $sort: {
+          expireDate: 1,
+        },
+      },
+      {
+        $match: {
+          expireDate: {
+            $gte: new Date(),
+            $lte: new Date(date.setDate(date.getDate() + 365)),
+          },
+        },
+      },
+    ]);
+
+    res.status(200).json({ status: "success", inventory: nearestEpireDates });
+    // console.log(date);
   } catch (error) {
     console.log(error);
     res.status(400).json({ error: "cannot get inventory data" });
