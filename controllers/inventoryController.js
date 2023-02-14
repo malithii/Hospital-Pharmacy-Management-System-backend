@@ -115,6 +115,7 @@ export const getNearestExpireDates = async (req, res, next) => {
           drug: "$inventory.drug",
           batch: "$inventory.batch.batchNo",
           expireDate: "$inventory.batch.expDate",
+          quantity: "$inventory.batch.quantity",
         },
       },
       {
@@ -133,6 +134,7 @@ export const getNearestExpireDates = async (req, res, next) => {
           drug: "$drug.drugName",
           batch: "$batch",
           expireDate: "$expireDate",
+          quantity: "$quantity",
         },
       },
       {
@@ -152,6 +154,61 @@ export const getNearestExpireDates = async (req, res, next) => {
 
     res.status(200).json({ status: "success", inventory: nearestEpireDates });
     // console.log(date);
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ error: "cannot get inventory data" });
+    next();
+  }
+};
+
+export const inventoryChart = async (req, res, next) => {
+  const { user } = req.body;
+
+  try {
+    const inventory = await Inventory.aggregate([
+      {
+        $match: {
+          user: mongoose.Types.ObjectId(user),
+        },
+      },
+      {
+        $unwind: "$inventory",
+      },
+      {
+        $project: {
+          _id: 0,
+          user: 0,
+        },
+      },
+      {
+        $unwind: "$inventory.batch",
+      },
+      {
+        $project: {
+          drug: "$inventory.drug",
+          quantity: "$inventory.quantityInStock",
+        },
+      },
+      {
+        $lookup: {
+          from: "drugs", //model
+          localField: "drug", //field in current model
+          foreignField: "_id", //field in other model
+          as: "drug",
+        },
+      },
+      {
+        $unwind: "$drug",
+      },
+      {
+        $project: {
+          drug: "$drug.drugId",
+          quantity: "$quantity",
+        },
+      },
+    ]);
+
+    res.status(200).json({ status: "success", inventory: inventory });
   } catch (error) {
     console.log(error);
     res.status(400).json({ error: "cannot get inventory data" });

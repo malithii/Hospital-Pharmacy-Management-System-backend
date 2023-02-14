@@ -4,6 +4,7 @@ import {
   getInventory,
   getNearestExpireDates,
   getWardInventory,
+  inventoryChart,
   newInventory,
 } from "../controllers/inventoryController.js";
 
@@ -14,5 +15,6 @@ router.post("/view-inventory", getInventory);
 router.post("/all-inventory", getAllInventory);
 router.post("/ward-inventory", getWardInventory);
 router.post("/getNearestExpireDates", getNearestExpireDates);
+router.post("/inventoryChart", inventoryChart);
 
 export default router;
