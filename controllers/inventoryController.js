@@ -131,7 +131,7 @@ export const getNearestExpireDates = async (req, res, next) => {
       },
       {
         $project: {
-          drug: "$drug.drugName",
+          drug: "$drug.drugId",
           batch: "$batch",
           expireDate: "$expireDate",
           quantity: "$quantity",
@@ -187,6 +187,7 @@ export const inventoryChart = async (req, res, next) => {
         $project: {
           drug: "$inventory.drug",
           quantity: "$inventory.quantityInStock",
+          reorderLevel: "$inventory.reorderLevel",
         },
       },
       {
@@ -204,11 +205,38 @@ export const inventoryChart = async (req, res, next) => {
         $project: {
           drug: "$drug.drugId",
           quantity: "$quantity",
+          reorderLevel: "$reorderLevel",
         },
       },
     ]);
 
     res.status(200).json({ status: "success", inventory: inventory });
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ error: "cannot get inventory data" });
+    next();
+  }
+};
+
+//enter reorder levels
+
+export const newReorderLevel = async (req, res, next) => {
+  const { user, drug, reorderLevel } = req.body;
+
+  try {
+    const inventory = await Inventory.findOne({ user: user });
+
+    const drugIndex = inventory.inventory.findIndex(
+      (item) => item.drug == drug
+    );
+    if (drugIndex == -1) {
+      throw new Error("drug not found");
+    }
+    inventory.inventory[drugIndex].reorderLevel = reorderLevel;
+
+    await inventory.save();
+
+    res.status(201).json({ status: "success", inventory: inventory });
   } catch (error) {
     console.log(error);
     res.status(400).json({ error: "cannot get inventory data" });
