@@ -230,13 +230,110 @@ export const newReorderLevel = async (req, res, next) => {
       (item) => item.drug == drug
     );
     if (drugIndex == -1) {
-      throw new Error("drug not found");
+      return res.status(400).json({ error: "cannot find drug" });
     }
     inventory.inventory[drugIndex].reorderLevel = reorderLevel;
 
     await inventory.save();
 
     res.status(201).json({ status: "success", inventory: inventory });
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ error: "cannot get inventory data" });
+    next();
+  }
+};
+
+//update reorder levels
+
+export const updateReorderLevel = async (req, res, next) => {
+  const { user, drug, reorderLevel } = req.body;
+
+  try {
+    const inventory = await Inventory.findOne({ user: user });
+
+    const drugIndex = inventory.inventory.findIndex(
+      (item) => item.drug == drug
+    );
+    if (drugIndex == -1) {
+      return res.status(400).json({ error: "cannot find drug" });
+    }
+    inventory.inventory[drugIndex].reorderLevel = reorderLevel;
+
+    await inventory.save();
+
+    res.status(201).json({ status: "success", inventory: inventory });
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ error: "cannot get inventory data" });
+    next();
+  }
+};
+
+//get drug quantityinstock less than reorder level
+
+export const getReorderLevelDrugs = async (req, res, next) => {
+  const { user } = req.body;
+
+  try {
+    const inventory = await Inventory.aggregate([
+      {
+        $match: {
+          user: mongoose.Types.ObjectId(user),
+        },
+      },
+      {
+        $unwind: "$inventory",
+      },
+      {
+        $project: {
+          _id: 0,
+          user: 0,
+        },
+      },
+      {
+        $unwind: "$inventory.batch",
+      },
+      {
+        $project: {
+          drug: "$inventory.drug",
+          quantity: "$inventory.quantityInStock",
+          reorderLevel: "$inventory.reorderLevel",
+        },
+      },
+      {
+        $lookup: {
+          from: "drugs", //model
+          localField: "drug", //field in current model
+          foreignField: "_id", //field in other model
+          as: "drug",
+        },
+      },
+      {
+        $unwind: "$drug",
+      },
+      {
+        $project: {
+          drug: "$drug.drugId",
+          quantity: "$quantity",
+          reorderLevel: "$reorderLevel",
+          isLowStock: { $lt: ["$quantity", "$reorderLevel"] },
+        },
+      },
+      //get only drugs with quantity less than reorder level
+      {
+        $match: {
+          isLowStock: true,
+        },
+      },
+      {
+        $project: {
+          isLowStock: 0,
+        },
+      },
+    ]);
+
+    res.status(200).json({ status: "success", inventory: inventory });
   } catch (error) {
     console.log(error);
     res.status(400).json({ error: "cannot get inventory data" });

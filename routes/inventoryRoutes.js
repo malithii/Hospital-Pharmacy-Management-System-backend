@@ -3,10 +3,12 @@ import {
   getAllInventory,
   getInventory,
   getNearestExpireDates,
+  getReorderLevelDrugs,
   getWardInventory,
   inventoryChart,
   newInventory,
   newReorderLevel,
+  updateReorderLevel,
 } from "../controllers/inventoryController.js";
 
 const router = Router();
@@ -18,5 +20,7 @@ router.post("/ward-inventory", getWardInventory);
 router.post("/getNearestExpireDates", getNearestExpireDates);
 router.post("/inventoryChart", inventoryChart);
 router.post("/newReorderLevel", newReorderLevel);
+router.post("/updateReorderLevel", updateReorderLevel);
+router.post("/getReorderLevelDrugs", getReorderLevelDrugs);
 
 export default router;
