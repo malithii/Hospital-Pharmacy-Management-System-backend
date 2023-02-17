@@ -37,7 +37,7 @@ export const getInventory = async (req, res, next) => {
     }
 
     res.status(201).json({ status: "success", inventory: inventory });
-    console.log(inventory.inventory.length);
+    // console.log(inventory.inventory.length);
   } catch (error) {
     console.log(error);
     res.status(400).json({ error: "cannot get inventory data" });
