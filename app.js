@@ -11,6 +11,7 @@ import inventoryRoutes from "./routes/inventoryRoutes.js";
 import cookieParser from "cookie-parser";
 import categoryRoutes from "./routes/categoryRoutes.js";
 import storeTempRoutes from "./routes/storeTempRoutes.js";
+import notificationsRoutes from "./routes/notificationsRoutes.js";
 
 dotenv.config();
 
@@ -28,6 +29,7 @@ app.use("/recieved-drugs", recievedDrugsRoutes);
 app.use("/inventory", inventoryRoutes);
 app.use("/category", categoryRoutes);
 app.use("/store-temp", storeTempRoutes);
+app.use("/notifications", notificationsRoutes);
 
 mongoose
   .connect(process.env.db, {
