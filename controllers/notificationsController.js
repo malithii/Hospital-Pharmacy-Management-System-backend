@@ -70,3 +70,25 @@ export const getUnreadNotifications = async (req, res, next) => {
     next();
   }
 };
+
+//READ notification
+
+export const readNotification = async (req, res, next) => {
+  const { user, _id } = req.body;
+
+  try {
+    const notification = await Notification.findOne({
+      user: user,
+      _id: _id,
+    });
+    notification.state = "READ";
+    await notification.save();
+    // console.log(notification);
+
+    res.status(200).json({ status: "success", notification: notification });
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ error: "notification data not created" });
+    next();
+  }
+};
