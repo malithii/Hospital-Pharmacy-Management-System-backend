@@ -3,6 +3,7 @@ import {
   checkBatchQuantity,
   getAllInventory,
   getInventory,
+  getInventoryByDrug,
   getNearestExpireDates,
   getReorderLevelDrugs,
   getWardInventory,
@@ -24,5 +25,6 @@ router.post("/newReorderLevel", newReorderLevel);
 router.post("/updateReorderLevel", updateReorderLevel);
 router.post("/getReorderLevelDrugs", getReorderLevelDrugs);
 router.post("/checkBatchQuantity", checkBatchQuantity);
+router.post("/getInventoryByDrug", getInventoryByDrug);
 
 export default router;

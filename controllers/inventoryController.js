@@ -73,7 +73,12 @@ export const getWardInventory = async (req, res, next) => {
       },
       {
         $match: {
-          "user.type": "PHARMACIST",
+          "user.type": "WARDUSER",
+        },
+      },
+      {
+        $sort: {
+          "user.wardNo": 1,
         },
       },
     ]);
@@ -373,6 +378,42 @@ export const checkBatchQuantity = async (req, res, next) => {
     } else {
       return res.status(400).json({ error: "drug not available" });
     }
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ error: "cannot get inventory data" });
+    next();
+  }
+};
+
+//get inventory by drug
+
+export const getInventoryByDrug = async (req, res, next) => {
+  const { user, drug } = req.body;
+
+  try {
+    const inventory = await Inventory.aggregate([
+      {
+        $match: {
+          user: mongoose.Types.ObjectId(user),
+        },
+      },
+      {
+        $unwind: "$inventory",
+      },
+      {
+        $project: {
+          _id: 0,
+          user: 0,
+        },
+      },
+      {
+        $match: {
+          "inventory.drug": mongoose.Types.ObjectId(drug),
+        },
+      },
+    ]);
+
+    res.status(200).json({ status: "success", inventory: inventory });
   } catch (error) {
     console.log(error);
     res.status(400).json({ error: "cannot get inventory data" });
