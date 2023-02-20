@@ -8,8 +8,9 @@ export const expireDateNotification = async (req, res, next) => {
 
   try {
     const inventory = await Inventory.findOne({ user: user });
+    const userNotifications = await Notification.find({ user: user });
     const now = new Date();
-    const next30Days = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000); // 30 days in milliseconds
+    const next90Days = new Date(now.getTime() + 90 * 24 * 60 * 60 * 1000); // 30 days in milliseconds
 
     const expiringInventory = await Inventory.find({
       user: user,
@@ -17,7 +18,7 @@ export const expireDateNotification = async (req, res, next) => {
         $elemMatch: {
           batch: {
             $elemMatch: {
-              expDate: { $lte: next30Days },
+              expDate: { $lte: next90Days },
             },
           },
         },
@@ -28,15 +29,20 @@ export const expireDateNotification = async (req, res, next) => {
     expiringInventory.forEach((inventory) => {
       inventory.inventory.forEach((item) => {
         item.batch.forEach((batch) => {
-          if (batch.expDate <= next30Days) {
+          if (batch.expDate <= next90Days) {
             const message = `The drug ${item.drug.drugId} with batch no ${
               batch.batchNo
             } is expiring soon (${batch.expDate.toDateString()})`;
-            notifications.push({
-              user: inventory.user,
-              message,
-              state: "UNREAD",
-            });
+            const notificationExists = userNotifications.find(
+              (notification) => notification.message === message
+            );
+            if (!notificationExists) {
+              notifications.push({
+                user: inventory.user,
+                message,
+                state: "UNREAD",
+              });
+            }
           }
         });
       });

@@ -98,7 +98,7 @@ export const acceptOrder = async (req, res, next) => {
     }
     await inventory.save();
     await order.save();
-    res.status(201).json({ status: "success", order: order });
+    res.status(200).json({ status: "success", order: order });
   } catch (error) {
     console.log(error);
     res.status(400).json({ error: "could not find orders" });

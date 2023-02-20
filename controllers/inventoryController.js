@@ -340,3 +340,42 @@ export const getReorderLevelDrugs = async (req, res, next) => {
     next();
   }
 };
+
+//check a batch and quantiry order is available in inventory
+
+export const checkBatchQuantity = async (req, res, next) => {
+  const { user, drug, batch, quantity } = req.body;
+
+  try {
+    const inventory = await Inventory.findOne({ user: user });
+
+    const drugIndex = inventory.inventory.findIndex(
+      (item) => item.drug == drug
+    );
+    if (drugIndex !== -1) {
+      const batchIndex = inventory.inventory[drugIndex].batch.findIndex(
+        (item) => item.batchNo == batch
+      );
+
+      if (batchIndex !== -1) {
+        if (
+          inventory.inventory[drugIndex].batch[batchIndex].quantity >= quantity
+        ) {
+          return res
+            .status(200)
+            .json({ status: "success", inventory: inventory });
+        } else {
+          return res.status(400).json({ error: "quantity not available" });
+        }
+      } else {
+        return res.status(400).json({ error: "batch not available" });
+      }
+    } else {
+      return res.status(400).json({ error: "drug not available" });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ error: "cannot get inventory data" });
+    next();
+  }
+};

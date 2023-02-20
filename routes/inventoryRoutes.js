@@ -1,5 +1,6 @@
 import { Router } from "express";
 import {
+  checkBatchQuantity,
   getAllInventory,
   getInventory,
   getNearestExpireDates,
@@ -22,5 +23,6 @@ router.post("/inventoryChart", inventoryChart);
 router.post("/newReorderLevel", newReorderLevel);
 router.post("/updateReorderLevel", updateReorderLevel);
 router.post("/getReorderLevelDrugs", getReorderLevelDrugs);
+router.post("/checkBatchQuantity", checkBatchQuantity);
 
 export default router;
