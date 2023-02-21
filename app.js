@@ -12,6 +12,7 @@ import cookieParser from "cookie-parser";
 import categoryRoutes from "./routes/categoryRoutes.js";
 import storeTempRoutes from "./routes/storeTempRoutes.js";
 import notificationsRoutes from "./routes/notificationsRoutes.js";
+import reportsRoutes from "./routes/reportsRoutes.js";
 
 dotenv.config();
 
@@ -30,6 +31,7 @@ app.use("/inventory", inventoryRoutes);
 app.use("/category", categoryRoutes);
 app.use("/store-temp", storeTempRoutes);
 app.use("/notifications", notificationsRoutes);
+app.use("/reports", reportsRoutes);
 
 mongoose
   .connect(process.env.db, {

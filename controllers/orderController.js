@@ -52,6 +52,7 @@ export const acceptOrder = async (req, res, next) => {
     order.pharmacist = pharmacist;
     const inventory = await Inventory.findOne({ user: pharmacist }); //user pharmacist
     for (let i = 0; i < orderItems.length; i++) {
+      let totalIssued = 0;
       const index = inventory.inventory.findIndex(
         (item) => item.drug.toString() === orderItems[i].drug.toString()
       );
@@ -68,9 +69,7 @@ export const acceptOrder = async (req, res, next) => {
           inventory.inventory[index].quantityInStock -
           orderItems[i].issueDrugs[j].quantityIssued;
 
-        // order.orderItems[i].totalIssued =
-        //   order.orderItems[i].totalIssued +
-        //   orderItems[i].issueDrugs[j].quantityIssued;
+        totalIssued = totalIssued + orderItems[i].issueDrugs[j].quantityIssued;
       }
       console.log(orderItems[i].drug);
       const orderItemIndex = order.orderItems.findIndex(
@@ -82,6 +81,7 @@ export const acceptOrder = async (req, res, next) => {
       order.orderItems[orderItemIndex].issueDrugs.push(
         ...orderItems[i].issueDrugs
       );
+      order.orderItems[orderItemIndex].totalIssued = totalIssued;
 
       // if (index !== -1) {
       //   const batchIndex = inventory.inventory[index].batch.findIndex(
@@ -125,7 +125,7 @@ export const saveQuantityReceived = async (req, res, next) => {
     }
 
     for (let i = 0; i < orderItems.length; i++) {
-      let totalIssued = 0;
+      let totalRecieved = 0;
       const orderItemIndex = order.orderItems.findIndex(
         (item) => item.drug.toString() === orderItems[i].drug.toString()
       );
@@ -162,8 +162,8 @@ export const saveQuantityReceived = async (req, res, next) => {
         order.orderItems[orderItemIndex].issueDrugs[
           issueDrugIndex
         ].quantityRecieved = orderItems[i].issueDrugs[j].quantityRecieved;
-        totalIssued =
-          totalIssued + orderItems[i].issueDrugs[j].quantityRecieved;
+        totalRecieved =
+          totalRecieved + orderItems[i].issueDrugs[j].quantityRecieved;
 
         if (inventoryItemIndex === -1) {
           //create a new inventory item
@@ -204,7 +204,7 @@ export const saveQuantityReceived = async (req, res, next) => {
             orderItems[i].issueDrugs[j].quantityRecieved;
         }
       }
-      order.orderItems[orderItemIndex].totalIssued = totalIssued;
+      order.orderItems[orderItemIndex].totalRecieved = totalRecieved;
     }
 
     await inventory.save();
@@ -269,3 +269,5 @@ export const issueDrugs = async (req, res, next) => {
     next();
   }
 };
+
+//drug issue report
