@@ -411,6 +411,16 @@ export const getInventoryByDrug = async (req, res, next) => {
           "inventory.drug": mongoose.Types.ObjectId(drug),
         },
       },
+      {
+        $unwind: "$inventory.batch",
+      },
+      {
+        $project: {
+          batch: "$inventory.batch.batchNo",
+          expDate: "$inventory.batch.expDate",
+          quantity: "$inventory.batch.quantity",
+        },
+      },
     ]);
 
     res.status(200).json({ status: "success", inventory: inventory });

@@ -49,6 +49,7 @@ export const acceptOrder = async (req, res, next) => {
   try {
     const order = await Order.findById(_id);
     order.status = "ACCEPTED";
+    order.pharmacist = pharmacist;
     const inventory = await Inventory.findOne({ user: pharmacist }); //user pharmacist
     for (let i = 0; i < orderItems.length; i++) {
       const index = inventory.inventory.findIndex(
@@ -209,6 +210,23 @@ export const saveQuantityReceived = async (req, res, next) => {
     await inventory.save();
     await order.save();
     res.status(200).json({ status: "success", order: order });
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ error: "could not find orders" });
+    next();
+  }
+};
+
+//get accepted orders
+
+export const getAcceptedOrders = async (req, res, next) => {
+  const { wardUser } = req.body;
+  try {
+    const orders = await Order.find({
+      wardUser: wardUser,
+      status: "ACCEPTED",
+    }).populate("orderItems.drug");
+    res.status(200).json({ status: "success", orders: orders });
   } catch (error) {
     console.log(error);
     res.status(400).json({ error: "could not find orders" });

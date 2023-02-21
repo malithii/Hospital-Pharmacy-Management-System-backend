@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
   acceptOrder,
+  getAcceptedOrders,
   getOrders,
   getPendingOrders,
   newOrder,
@@ -14,5 +15,6 @@ router.post("/get-orders", getOrders);
 router.post("/accept-order", acceptOrder);
 router.post("/get-pending-orders", getPendingOrders);
 router.post("/saveQuantityReceived", saveQuantityReceived);
+router.post("/getAcceptedOrders", getAcceptedOrders);
 
 export default router;
