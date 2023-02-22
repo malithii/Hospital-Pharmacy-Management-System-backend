@@ -65,18 +65,25 @@ export const drugIssueReport = async (req, res, next) => {
       {
         $match: {
           $expr: {
-            $eq: [{ $month: "$date" }, month],
+            $eq: [{ $month: "$updatedAt" }, month],
           },
         },
       },
-      //   {
-      //     $group: {
-      //       _id: {
-      //         drug: "$drug",
-      //       },
-      //       total: { $sum: "$quantity" },
-      //     },
-      //   },
+      {
+        $group: {
+          _id: {
+            drug: "$drug",
+          },
+          total: { $sum: "$quantity" },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          drug: "$_id.drug",
+          total: 1,
+        },
+      },
     ]);
     res.status(200).json({ status: "success", orders: orders });
   } catch (error) {
@@ -111,6 +118,7 @@ export const inventoryReport = async (req, res, next) => {
       {
         $project: {
           drug: "$inventory.drug",
+          batch: "$inventory.batch",
           quantity: "$inventory.quantityInStock",
           reorderLevel: "$inventory.reorderLevel",
         },
@@ -129,10 +137,22 @@ export const inventoryReport = async (req, res, next) => {
       {
         $project: {
           drug: "$drug.drugId",
+          batch: "$batch",
           quantity: "$quantity",
           reorderLevel: "$reorderLevel",
         },
       },
+
+      // {
+      //   $unwind: "$drug",
+      // },
+      // {
+      //   $project: {
+      //     drug: "$drug.drugId",
+      //     quantity: "$quantity",
+      //     reorderLevel: "$reorderLevel",
+      //   },
+      // },
     ]);
 
     res.status(200).json({ status: "success", inventory: inventory });
