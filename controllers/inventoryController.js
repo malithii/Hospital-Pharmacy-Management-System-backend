@@ -431,3 +431,58 @@ export const getInventoryByDrug = async (req, res, next) => {
   }
 };
 
+export const searchInventoryByDrug = async (req, res, next) => {
+  const { user, drug } = req.body;
+
+  try {
+    const inventory = await Inventory.aggregate([
+      {
+        $match: {
+          user: mongoose.Types.ObjectId(user),
+        },
+      },
+      {
+        $unwind: "$inventory",
+      },
+      {
+        $project: {
+          _id: 0,
+          user: 0,
+        },
+      },
+      {
+        $match: {
+          "inventory.drug": mongoose.Types.ObjectId(drug),
+        },
+      },
+
+      {
+        $project: {
+          drug: "$inventory.drug",
+          quantityInStock: "$inventory.quantityInStock",
+          reorderLevel: "$inventory.reorderLevel",
+          batch: "$inventory.batch",
+        },
+      },
+      //unwind drug array
+
+      {
+        $lookup: {
+          from: "drugs", //model
+          localField: "drug", //field in current model
+          foreignField: "_id", //field in other model
+          as: "drug",
+        },
+      },
+      {
+        $unwind: "$drug",
+      },
+    ]);
+
+    res.status(200).json({ status: "success", inventory: inventory });
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ error: "cannot get inventory data" });
+    next();
+  }
+};

@@ -17,25 +17,25 @@ export const newDrugUsage = async (req, res, next) => {
       quantityfromBHT,
     });
     //TODO: avoid saving minus values
-    // const inventory = await Inventory.findOne({ user: user });
+    const inventory = await Inventory.findOne({ user: user });
 
-    // const index = inventory.inventory.findIndex(
-    //   (item) => item.drug.toString() === drug.toString() //String or Number?
-    // );
+    const index = inventory.inventory.findIndex(
+      (item) => item.drug.toString() === drug.toString() //String or Number?
+    );
 
-    // if (index !== -1) {
-    //   const batchIndex = inventory.inventory[index].batch.findIndex(
-    //     (item) => item.batchNo === batchNo
-    //   );
-    //   if (batchIndex !== -1) {
-    //     inventory.inventory[index].batch[batchIndex].quantity =
-    //       inventory.inventory[index].batch[batchIndex].quantity - quantitytoBHT;
-    //   }
-    //   inventory.inventory[index].quantityInStock =
-    //     inventory.inventory[index].quantityInStock - quantitytoBHT;
-    // }
+    if (index !== -1) {
+      const batchIndex = inventory.inventory[index].batch.findIndex(
+        (item) => item.batchNo === batchNo
+      );
+      if (batchIndex !== -1) {
+        inventory.inventory[index].batch[batchIndex].quantity =
+          inventory.inventory[index].batch[batchIndex].quantity - quantitytoBHT;
+      }
+      inventory.inventory[index].quantityInStock =
+        inventory.inventory[index].quantityInStock - quantitytoBHT;
+    }
 
-    // await inventory.save();
+    await inventory.save();
 
     res.status(201).json({ status: "success", usage: usage });
   } catch (error) {
