@@ -486,3 +486,36 @@ export const searchInventoryByDrug = async (req, res, next) => {
     next();
   }
 };
+
+//remove batch from inventory
+
+export const removeBatch = async (req, res, next) => {
+  const { user, drug, batch } = req.body;
+
+  try {
+    const inventory = await Inventory.findOne({ user: user });
+
+    const drugIndex = inventory.inventory.findIndex(
+      (item) => item.drug == drug
+    );
+    if (drugIndex !== -1) {
+      const batchIndex = inventory.inventory[drugIndex].batch.findIndex(
+        (item) => item.batchNo == batch
+      );
+
+      if (batchIndex !== -1) {
+        inventory.inventory[drugIndex].batch.splice(batchIndex, 1);
+        await inventory.save();
+        return res
+          .status(200)
+          .json({ status: "success", inventory: inventory });
+      } else {
+        return res.status(400).json({ error: "batch not available" });
+      }
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ error: "cannot get inventory data" });
+    next();
+  }
+};

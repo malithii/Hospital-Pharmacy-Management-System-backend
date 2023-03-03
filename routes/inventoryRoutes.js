@@ -10,6 +10,7 @@ import {
   inventoryChart,
   newInventory,
   newReorderLevel,
+  removeBatch,
   searchInventoryByDrug,
   updateReorderLevel,
 } from "../controllers/inventoryController.js";
@@ -28,5 +29,6 @@ router.post("/getReorderLevelDrugs", getReorderLevelDrugs);
 router.post("/checkBatchQuantity", checkBatchQuantity);
 router.post("/getInventoryByDrug", getInventoryByDrug);
 router.post("/searchInventoryByDrug", searchInventoryByDrug);
+router.post("/removeBatch", removeBatch);
 
 export default router;
