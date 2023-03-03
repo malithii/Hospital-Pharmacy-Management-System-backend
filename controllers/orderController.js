@@ -21,7 +21,9 @@ export const newOrder = async (req, res, next) => {
 
 export const getOrders = async (req, res, next) => {
   try {
-    const order = await Order.find({}).populate("pharmacist wardUser");
+    const order = await Order.find({}).populate(
+      "pharmacist wardUser orderItems.drug"
+    );
     res.status(201).json({ status: "success", order: order });
   } catch (error) {
     console.log(error);

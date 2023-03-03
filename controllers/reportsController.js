@@ -85,6 +85,11 @@ export const drugIssueReport = async (req, res, next) => {
           total: 1,
         },
       },
+      {
+        $sort: {
+          total: -1,
+        },
+      },
     ]);
     res.status(200).json({ status: "success", orders: orders });
   } catch (error) {
