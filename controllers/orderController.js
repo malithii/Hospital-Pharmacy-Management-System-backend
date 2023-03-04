@@ -249,13 +249,48 @@ export const issueDrugs = async (req, res, next) => {
         (item) => item.drug.toString() === orderItems[i].drug.toString()
       );
       if (index !== -1) {
-        const batchIndex = inventory.inventory[index].batch.findIndex(
-          (item) => item.batchNo === orderItems[i].batch.batchNo
+        //find the batch with the nearest expiry date
+        let nearestExpiryDate = new Date(
+          inventory.inventory[index].batch[0].expDate
         );
-        if (batchIndex !== -1) {
-          inventory.inventory[index].batch[batchIndex].quantity =
-            inventory.inventory[index].batch[batchIndex].quantity -
-            orderItems[i].quantityOrdered;
+        let nearestExpiryDateIndex = 0;
+        for (let j = 1; j < inventory.inventory[index].batch.length; j++) {
+          const expDate = new Date(inventory.inventory[index].batch[j].expDate);
+          if (expDate < nearestExpiryDate) {
+            nearestExpiryDate = expDate;
+            nearestExpiryDateIndex = j;
+          }
+          //allocate quantity from nearest expiry date batch
+          if (
+            inventory.inventory[index].batch[nearestExpiryDateIndex].quantity >=
+            orderItems[i].quantityOrdered
+          ) {
+            inventory.inventory[index].batch[nearestExpiryDateIndex].quantity =
+              inventory.inventory[index].batch[nearestExpiryDateIndex]
+                .quantity - orderItems[i].quantityOrdered;
+            orderItems[i].issueDrugs.push({
+              batch:
+                inventory.inventory[index].batch[nearestExpiryDateIndex]
+                  .batchNo,
+              quantityRecieved: orderItems[i].quantityOrdered,
+            });
+            break;
+          } else {
+            orderItems[i].issueDrugs.push({
+              batch:
+                inventory.inventory[index].batch[nearestExpiryDateIndex]
+                  .batchNo,
+              quantityRecieved:
+                inventory.inventory[index].batch[nearestExpiryDateIndex]
+                  .quantity,
+            });
+            orderItems[i].quantityOrdered =
+              orderItems[i].quantityOrdered -
+              inventory.inventory[index].batch[nearestExpiryDateIndex].quantity;
+            inventory.inventory[index].batch[
+              nearestExpiryDateIndex
+            ].quantity = 0;
+          }
         }
         inventory.inventory[index].quantityInStock =
           inventory.inventory[index].quantityInStock -
@@ -271,5 +306,3 @@ export const issueDrugs = async (req, res, next) => {
     next();
   }
 };
-
-//drug issue report
