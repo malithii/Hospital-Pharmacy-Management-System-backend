@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import Inventory from "../models/Inventory.js";
 import Order from "../models/Order.js";
+import WardDrugUsage from "../models/WardDrugUsage.js";
 
 //drug issue report
 export const drugIssueReport = async (req, res, next) => {
@@ -248,6 +249,54 @@ export const pharmacyDrugUsageChart = async (req, res, next) => {
   } catch (error) {
     console.log(error);
     res.status(400).json({ error: "cannot get orders" });
+    next();
+  }
+};
+
+//ward drug usage chart
+export const wardDrugUsageChart = async (req, res, next) => {
+  const { ward, month, year, drug } = req.body;
+
+  try {
+    const wardUsage = await WardDrugUsage.aggregate([
+      {
+        $match: {
+          user: mongoose.Types.ObjectId(ward),
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          drug: 1,
+          quantitytoBHT: 1,
+          date: 1,
+        },
+      },
+      {
+        $match: {
+          drug: mongoose.Types.ObjectId(drug),
+        },
+      },
+      //get in this month and year
+      {
+        $project: {
+          quantity: "$quantitytoBHT",
+          date: 1,
+          month: { $month: "$date" },
+          year: { $year: "$date" },
+        },
+      },
+      {
+        $match: {
+          month: month,
+          year: year,
+        },
+      },
+    ]);
+    res.status(200).json({ status: "success", usage: wardUsage });
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ error: "cannot get ward usage" });
     next();
   }
 };
