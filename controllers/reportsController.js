@@ -211,15 +211,15 @@ export const pharmacyDrugUsageChart = async (req, res, next) => {
           date: 1,
           updatedAt: 1,
           _id: 1,
+          month: { $month: "$updatedAt" },
+          year: { $year: "$updatedAt" },
         },
       },
       //  // get in this month and year
       {
         $match: {
-          $expr: {
-            $eq: [{ $month: "$updatedAt" }, month],
-            $eq: [{ $year: "$updatedAt" }, year],
-          },
+          month: month,
+          year: year,
         },
       },
       //group by date
