@@ -100,6 +100,78 @@ export const drugIssueReport = async (req, res, next) => {
   }
 };
 
+//ward drug usage report
+
+export const wardDrugUsageReport = async (req, res, next) => {
+  const { user, month, year } = req.body;
+
+  try {
+    const wardDrugUsage = await WardDrugUsage.aggregate([
+      {
+        $match: {
+          user: mongoose.Types.ObjectId(user),
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          user: 0,
+          batchNo: 0,
+          bht: 0,
+        },
+      },
+      {
+        $project: {
+          drug: "$drug",
+          quantitytoBHT: "$quantitytoBHT",
+          quantityfromBHT: "$quantityfromBHT",
+          month: { $month: "$date" },
+          year: { $year: "$date" },
+        },
+      },
+      {
+        $match: {
+          month: month,
+          year: year,
+        },
+      },
+      {
+        $group: {
+          _id: {
+            drug: "$drug",
+          },
+          total: { $sum: "$quantitytoBHT" },
+        },
+      },
+      {
+        $project: {
+          drug: "$_id.drug",
+          total: 1,
+          _id: 0,
+        },
+      },
+      {
+        $sort: {
+          total: -1,
+        },
+      },
+      {
+        $lookup: {
+          from: "drugs", //model
+          localField: "drug", //field in current model
+          foreignField: "_id", //field in other model
+          as: "drug",
+        },
+      },
+    ]);
+    res.status(200).json({ status: "success", wardDrugUsage: wardDrugUsage });
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ error: "could not find orders" });
+    next();
+  }
+};
+
 //inventory report
 
 export const inventoryReport = async (req, res, next) => {
