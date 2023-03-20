@@ -2,6 +2,7 @@ import { Router } from "express";
 import {
   checkBatchQuantity,
   getAllInventory,
+  getBatches,
   getInventory,
   getInventoryByDrug,
   getNearestExpireDates,
@@ -30,5 +31,6 @@ router.post("/checkBatchQuantity", checkBatchQuantity);
 router.post("/getInventoryByDrug", getInventoryByDrug);
 router.post("/searchInventoryByDrug", searchInventoryByDrug);
 router.post("/removeBatch", removeBatch);
+router.post("/getBatches", getBatches);
 
 export default router;
