@@ -106,7 +106,12 @@ export const getDrugUsageByMonth = async (req, res, next) => {
 export const viewDrugUsageByDate = async (req, res, next) => {
   const { user, date } = req.body;
   try {
-    const drugUsage = await WardDrugUsage.find({ user, date }).populate("drug");
+    const startDate = new Date(date);
+    const endDate = new Date(startDate.getTime() + 86400000);
+    const drugUsage = await WardDrugUsage.find({
+      user: user,
+      date: { $gte: startDate, $lt: endDate },
+    }).populate("drug");
 
     res.status(200).json({ status: "success", drugUsage: drugUsage });
   } catch (error) {
