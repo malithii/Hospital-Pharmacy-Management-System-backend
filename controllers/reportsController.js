@@ -7,7 +7,6 @@ import WardDrugUsage from "../models/WardDrugUsage.js";
 export const drugIssueReport = async (req, res, next) => {
   const { pharmacist, month, year } = req.body;
   try {
-    console.log("wffg");
     const orders = await Order.aggregate([
       {
         $match: {
@@ -163,6 +162,9 @@ export const wardDrugUsageReport = async (req, res, next) => {
           as: "drug",
         },
       },
+      {
+        $unwind: "$drug",
+      },
     ]);
     res.status(200).json({ status: "success", wardDrugUsage: wardDrugUsage });
   } catch (error) {
@@ -281,13 +283,14 @@ export const pharmacyDrugUsageChart = async (req, res, next) => {
         $project: {
           quantity: "$orderItems.totalIssued",
           date: 1,
+          drug: "$orderItems.drug",
           updatedAt: 1,
           _id: 1,
           month: { $month: "$updatedAt" },
           year: { $year: "$updatedAt" },
         },
       },
-      //  // get in this month and year
+      // get in this month and year
       {
         $match: {
           month: month,
