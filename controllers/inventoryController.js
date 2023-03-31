@@ -504,7 +504,11 @@ export const removeBatch = async (req, res, next) => {
       );
 
       if (batchIndex !== -1) {
+        inventory.inventory[drugIndex].quantityInStock =
+          inventory.inventory[drugIndex].quantityInStock -
+          inventory.inventory[drugIndex].batch[batchIndex].quantity;
         inventory.inventory[drugIndex].batch.splice(batchIndex, 1);
+
         await inventory.save();
         return res
           .status(200)
